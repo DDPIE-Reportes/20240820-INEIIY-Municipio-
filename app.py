@@ -64,7 +64,7 @@ def generar_pdf(tabla_gramatica, tabla_vocabulario, file_path, logo_path):
 df = pd.read_csv('Resultados.csv')
 
 # Configuración de la página
-st.set_page_config(page_title="Resultados por municipio - INEIIY 2024", layout="wide")
+st.set_page_config(page_title="Consulta de información por municipio - INEIIY 2024", layout="wide")
 
 # Convertir la imagen del logo a base64 (opcional)
 logo_path = "logo.png"
@@ -74,7 +74,7 @@ st.markdown(
     f"""
     <div style='text-align: center;'>
         <img src="data:image/png;base64,{image_to_base64(logo_path)}" width="235" height="56" style="margin-bottom: 10px;">
-        <h1>Resultados por municipio - INEIIY 2024</h1>
+        <h1>Consulta de información por municipio - INEIIY 2024</h1>
     </div>
     """,
     unsafe_allow_html=True
@@ -180,8 +180,8 @@ if not df_filtered.empty:
         st.write(tabla_vocabulario)
 
     # Crear botón de descarga de PDF
-    st.write("\n\n**Descargar resultados en PDF**")
-    file_path = "resultados_por_municipio.pdf"  # Nombre temporal del archivo
+    st.write("\n\n**Descargar Consulta en PDF**")
+    file_path = "Consulta_por_municipio.pdf"  # Nombre temporal del archivo
     generar_pdf(tabla_gramatica, tabla_vocabulario, file_path, logo_path)
     
     # Leer el archivo PDF generado y permitir la descarga
@@ -191,7 +191,7 @@ if not df_filtered.empty:
     st.download_button(
         label="Descargar PDF",
         data=pdf_data,
-        file_name=f"resultados_municipio_{municipio_selected}.pdf",
+        file_name=f"Consulta_municipio_{municipio_selected}.pdf",
         mime="application/pdf"
     )
     
