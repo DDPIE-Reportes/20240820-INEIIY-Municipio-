@@ -81,11 +81,14 @@ st.markdown(
 )
 
 # Filtro por Municipio
-municipio_options = sorted(df['Municipio'].unique())  # Obtener opciones únicas de Municipio y ordenarlas de menor a mayor
+municipio_options = ["TODOS"] + sorted(df['Municipio'].unique())  # Añadir "TODOS" al principio de la lista
 municipio_selected = st.selectbox("Selecciona el Municipio:", municipio_options)
 
 # Filtrar DataFrame según el valor de Municipio seleccionado
-df_filtered = df[df['Municipio'] == municipio_selected]
+if municipio_selected == "TODOS":
+    df_filtered = df
+else:
+    df_filtered = df[df['Municipio'] == municipio_selected]
 
 if not df_filtered.empty:
     # Filtrar valores no nulos para gráficos
