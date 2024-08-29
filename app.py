@@ -21,7 +21,7 @@ def generar_pdf(tabla_gramatica, tabla_vocabulario, file_path, logo_path):
     # Título principal
     pdf.set_font("Arial", size=12)
     pdf.set_y(30)  # Ajustar la posición del título para que no se sobreponga al logo
-    pdf.cell(200, 10, txt="Resultados por municipio - INEIIY 2024", ln=True, align="C")
+    pdf.cell(200, 10, txt="Consulta de información por municipio - INEIIY 2024", ln=True, align="C")
     pdf.ln(10)
 
     # Añadir tablas de frecuencias con porcentaje
