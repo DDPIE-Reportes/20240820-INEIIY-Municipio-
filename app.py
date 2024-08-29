@@ -11,7 +11,7 @@ def image_to_base64(image_path):
         return base64.b64encode(img_file.read()).decode("utf-8")
 
 # Función para generar el PDF y guardarlo en un archivo temporal
-def generar_pdf(tabla_gramatica, tabla_vocabulario, tabla_cct, file_path, logo_path):
+def generar_pdf(tabla_gramatica, tabla_vocabulario, file_path, logo_path):
     pdf = FPDF()
     pdf.add_page()
 
@@ -21,7 +21,7 @@ def generar_pdf(tabla_gramatica, tabla_vocabulario, tabla_cct, file_path, logo_p
     # Título principal
     pdf.set_font("Arial", size=12)
     pdf.set_y(30)  # Ajustar la posición del título para que no se sobreponga al logo
-    pdf.cell(200, 10, txt="Resultados por zona - INEIIY 2024", ln=True, align="C")
+    pdf.cell(200, 10, txt="Resultados por municipio - INEIIY 2024", ln=True, align="C")
     pdf.ln(10)
 
     # Añadir tablas de frecuencias con porcentaje
@@ -53,19 +53,6 @@ def generar_pdf(tabla_gramatica, tabla_vocabulario, tabla_cct, file_path, logo_p
         pdf.cell(40, 10, txt=f"{tabla_vocabulario.iloc[i]['Porcentaje']}", border=1)
         pdf.ln()
     
-    pdf.ln(10)
-    
-    # Tabla de CCT
-    pdf.cell(100, 10, txt="Frecuencia por CCT", ln=True)
-    pdf.ln(5)
-    pdf.cell(80, 10, txt="CCT", border=1)
-    pdf.cell(40, 10, txt="Frecuencia", border=1)
-    pdf.ln()
-    for i in range(len(tabla_cct)):
-        pdf.cell(80, 10, txt=f"{tabla_cct.iloc[i]['CCT']}", border=1)
-        pdf.cell(40, 10, txt=f"{tabla_cct.iloc[i]['Frecuencia']}", border=1)
-        pdf.ln()
-    
     # Añadir la leyenda al final de la página
     pdf.set_font("Arial", size=9)
     pdf.multi_cell(0, 10, txt="La información proporcionada en esta página es suministrada por el Centro de Evaluación Educativa del Estado de Yucatán con fines exclusivamente informativos", align='C')
@@ -77,7 +64,7 @@ def generar_pdf(tabla_gramatica, tabla_vocabulario, tabla_cct, file_path, logo_p
 df = pd.read_csv('Resultados.csv')
 
 # Configuración de la página
-st.set_page_config(page_title="Resultados por zona - INEIIY 2024", layout="wide")
+st.set_page_config(page_title="Resultados por municipio - INEIIY 2024", layout="wide")
 
 # Convertir la imagen del logo a base64 (opcional)
 logo_path = "logo.png"
@@ -87,18 +74,18 @@ st.markdown(
     f"""
     <div style='text-align: center;'>
         <img src="data:image/png;base64,{image_to_base64(logo_path)}" width="235" height="56" style="margin-bottom: 10px;">
-        <h1>Resultados por zona - INEIIY 2024</h1>
+        <h1>Resultados por municipio - INEIIY 2024</h1>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-# Filtro por Zona
-zona_options = sorted(df['Zona'].unique())  # Obtener opciones únicas de Zona y ordenarlas de menor a mayor
-zona_selected = st.selectbox("Selecciona la Zona:", zona_options)
+# Filtro por Municipio
+municipio_options = sorted(df['Municipio'].unique())  # Obtener opciones únicas de Municipio y ordenarlas de menor a mayor
+municipio_selected = st.selectbox("Selecciona el Municipio:", municipio_options)
 
-# Filtrar DataFrame según el valor de Zona seleccionado
-df_filtered = df[df['Zona'] == zona_selected]
+# Filtrar DataFrame según el valor de Municipio seleccionado
+df_filtered = df[df['Municipio'] == municipio_selected]
 
 if not df_filtered.empty:
     # Filtrar valores no nulos para gráficos
@@ -178,10 +165,6 @@ if not df_filtered.empty:
     tabla_vocabulario.columns = ['Nivel', 'Estudiantes']
     tabla_vocabulario['Porcentaje'] = (tabla_vocabulario['Estudiantes'] / freq_vocabulario * 100).round(2).astype(str) + '%'
 
-    # Contar la frecuencia de cada CCT
-    tabla_cct = df_filtered['CCT'].value_counts().reset_index()
-    tabla_cct.columns = ['CCT', 'Frecuencia']
-
     # Mostrar tablas de frecuencias en dos columnas
     col1, col2 = st.columns(2)
     
@@ -193,13 +176,10 @@ if not df_filtered.empty:
         st.write("**Tabla de Frecuencias: Vocabulario**")
         st.write(tabla_vocabulario)
 
-    st.write("**Frecuencia por CCT**")
-    st.write(tabla_cct)
-
     # Crear botón de descarga de PDF
     st.write("\n\n**Descargar resultados en PDF**")
-    file_path = "resultados_por_zona.pdf"  # Nombre temporal del archivo
-    generar_pdf(tabla_gramatica, tabla_vocabulario, tabla_cct, file_path, logo_path)
+    file_path = "resultados_por_municipio.pdf"  # Nombre temporal del archivo
+    generar_pdf(tabla_gramatica, tabla_vocabulario, file_path, logo_path)
     
     # Leer el archivo PDF generado y permitir la descarga
     with open(file_path, "rb") as file:
@@ -208,11 +188,11 @@ if not df_filtered.empty:
     st.download_button(
         label="Descargar PDF",
         data=pdf_data,
-        file_name=f"resultados_zona_{zona_selected}.pdf",
+        file_name=f"resultados_municipio_{municipio_selected}.pdf",
         mime="application/pdf"
     )
     
     # Eliminar el archivo PDF temporal después de su uso
     os.remove(file_path)
 else:
-    st.write("No hay datos disponibles para la Zona seleccionada.")
+    st.write("No hay datos disponibles para el Municipio seleccionado.")
